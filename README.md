@@ -33,9 +33,10 @@ Test einer Abfrage (IP-Adresse und Zugangsdaten admin/admin an seinen Wechselric
 
 Sendescript Datei erstellen
     
-   git clone https://github.com/RaptorSDS/VZ_deye_script.git
+  
+    git clone https://github.com/RaptorSDS/VZ_deye_script.git
 
-   nano auslesen.sh
+    nano auslesen.sh
 
 Bitte IP Adressen, Wechselrichter Zugangsdaten, UUID an deine Gegebenheiten anpassen.
 
