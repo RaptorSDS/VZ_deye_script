@@ -3,9 +3,11 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # set -e stop the script when Invert not reachable
 set -e
 
+# Script: auslesen.sh
+# Author: Tobias Baumann aka RaptorSDS
+# License: MIT
 
-
-# additionl need script from dr-ni
+# additional need script from dr-ni
 # https://github.com/dr-ni/mi600
 
 
