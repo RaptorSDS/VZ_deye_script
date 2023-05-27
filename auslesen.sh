@@ -3,12 +3,18 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 set -e
 
-host_pv="192.168.2.28"
+# Script: auslesen.sh
+# Author: Tobias Baumann aka RaptorSDS
+# License: MIT
+# with help of OpenAI GPT-3.5
+
+
+host_pv="192.168.xxxx"
 user="admin"
 password="admin"
-UUID1="7680efc0-aabe-11ed-8cfb-f1a7e776cc49"
-UUID2="d69e8d40-fbf0-11ed-bd53-3b795ba98c6f"
-host_db="192.168.2.51"
+UUID1="768xxxx"
+UUID2="d69xxxx"
+host_db="192.168.xxx"
 TOTAL=""
 TOTAL_NUM=""
 ACTUAL=""
