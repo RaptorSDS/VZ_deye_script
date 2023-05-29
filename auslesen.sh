@@ -23,7 +23,7 @@ ACTUAL_NUM=""
 
 #request value
 ACTUAL=$(/usr/local/bin/mi600 $host_pv $user $password webdata_now_p)
-#remove Zero in Front
+#Remove end SPACE-Char
 ACTUAL_NUM=$(($ACTUAL))
 
 
