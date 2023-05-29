@@ -1,8 +1,15 @@
 # VZ_deye_script
 Script for Readout Deye Solar Inverter for VZ Database 
 
+
+
+
+
 addtional need for script from dr-ni
 https://github.com/dr-ni/mi600
+
+
+VORRAUSSETZUNG SCHAFFEN
 
 
 Schritt für Schritt
@@ -30,11 +37,21 @@ Installation starten
 Test einer Abfrage (IP-Adresse und Zugangsdaten admin/admin an seinen Wechselrichter anpassen)
 
     mi600 [IP-Wechselrichter] admin admin webdata_today_e 
+    
+    
+    
+    
+    
+    MÖGLICHKEIT 1 ÜBER CRON
+    
+    
 
 Sendescript Datei erstellen
     
   
     git clone https://github.com/RaptorSDS/VZ_deye_script.git
+    
+    Verzeichniss Wechseln 
 
     nano auslesen.sh
 
@@ -54,3 +71,56 @@ Datei zu CRON hinzufügen (hier als Beispiel Raspberry Pi mit 5 minuten Interval
 
 Die Weboberfläche hat eine sehr langsame Aktualisierungsrate daher sollte der Cronjob nur alle 3 oder 5 Minuten laufen.
 
+
+
+
+
+MÖGLICHKEIT 2 VZLOGGER EXEC
+
+Sendescript Datei erstellen
+    
+  
+    git clone https://github.com/RaptorSDS/VZ_deye_script.git
+
+    Verzeichniss Wechseln 
+    
+    nano deye_read_exec.sh 
+    
+    
+Wechselrichter Zugangsdaten an deine Gegebenheiten anpassen.    
+
+    
+    mkdir /etc/deye
+    chmod +x deye_read_exec.sh
+    cp deye_read_exec.sh /etc/deye/
+    
+    Nun dei vzlogger.conf anpassen /hinzufügen 
+    {
+      "enabled": true,
+      "allowskip": true,
+      "interval": 240,
+      "aggtime": -1,
+      "aggfixedinterval": false,
+      "channels": [
+        {
+          "api": "volkszaehler",
+          "uuid": "7680efc0-xxxxx,
+          "identifier": "ACTUAL",
+          "middleware": "http://localhost/middleware.php",
+          "aggmode": "avg",
+          "duplicates": 0
+        },
+        {
+          "api": "volkszaehler",
+          "uuid": "d69e8d40-xxxxx",
+          "identifier": "TOTAL",
+          "middleware": "http://localhost/middleware.php",
+          "aggmode": "none",
+          "duplicates": 3600
+        }
+      ],
+      "protocol": "exec",
+      "command": "/etc/deye/deye_read_exec.sh 192.168.2.28 ACTUAL TOTAL",
+      "format": "$i = $v"
+    }
+    
