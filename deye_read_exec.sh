@@ -5,6 +5,14 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 set -e
 set -u
 
+# Script: deye_read_exec.sh
+# Author: Tobias Baumann aka RaptorSDS
+# License: MIT
+# with help of OpenAI GPT-3.5 and VZlogger Group
+# idee by script for KOSTAL_Pico JSON VZlogger exec 
+
+
+
 # Function to display script usage
 usage() {
   echo "Usage: $0 <hostname> <reading1> <reading2> ..."
