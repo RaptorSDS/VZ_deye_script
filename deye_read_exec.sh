@@ -30,11 +30,13 @@ password="admin"
 for READING in $READINGS; do
   if [ "$READING" == "ACTUAL" ]; then
     ACTUAL=$(/usr/local/bin/mi600 "$HOSTNAME" "$user" "$password" webdata_now_p)
+    #Remove end SPACE-Char
     ACTUAL_NUM=$(($ACTUAL))
     OUTPUT="$ACTUAL_NUM"
     printf "%s = %s\n" "$READING" "$OUTPUT"
   elif [ "$READING" == "TOTAL" ]; then
     TOTAL=$(/usr/local/bin/mi600 "$HOSTNAME" "$user" "$password" webdata_total_e)
+    ##Remove end SPACE-Char
     TOTAL_NUM=$(echo "$TOTAL" | sed 's/[[:space:]]*$//')
     if [ $TOTAL_NUM == "0.0" ]; then
       OUTPUT=""
@@ -44,7 +46,9 @@ for READING in $READINGS; do
     printf "%s = %s\n" "$READING" "$OUTPUT"
   elif [ "$READING" == "DAY" ]; then
     DAY=$(/usr/local/bin/mi600 "$HOSTNAME" "$user" "$password" webdata_today_e)
-    OUTPUT="$DAY"
+    ##Remove end SPACE-Char
+    DAY_NUM=$(echo "$DAY" | sed 's/[[:space:]]*$//')
+    OUTPUT="$DAY_NUM"
     printf "%s = %s\n" "$READING" "$OUTPUT"
   else
     echo "Invalid reading: $READING"
