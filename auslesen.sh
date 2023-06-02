@@ -38,7 +38,7 @@ TOTAL=$(/usr/local/bin/mi600 $host_pv $user $password webdata_total_e)
 TOTAL_NUM=$(echo $TOTAL | sed 's/[[:space:]]*$//')
 
 #check if non ZERO
-if [ $TOTAL_NUM != "0.0" ]; then
+if [ $TOTAL_NUM != "0.0" ] || [$TOTAL_NUM != "0" ]; then
 #Send to DB
   wget -O - -q "http://"$host_db"/middleware/data/"$UUID2".json?operation=add&value="$TOTAL_NUM""
 fi
