@@ -46,12 +46,13 @@ for READING in $READINGS; do
     TOTAL=$(/usr/local/bin/mi600 "$HOSTNAME" "$user" "$password" webdata_total_e)
     ##Remove end SPACE-Char
     TOTAL_NUM=$(echo "$TOTAL" | sed 's/[[:space:]]*$//')
-    if [ $TOTAL_NUM == "0.0" ]; then
-      OUTPUT=""
+    
+    OUTPUT="$TOTAL_NUM"
+    if [ $TOTAL_NUM == "0.0" ] || [ $TOTAL_NUM == "0" ] ; then
+      printf "%s = %s\n" "undefine" "$OUTPUT"
     else
-      OUTPUT="$TOTAL_NUM"
-    fi
-    printf "%s = %s\n" "$READING" "$OUTPUT"
+      printf "%s = %s\n" "$READING" "$OUTPUT"
+  
   elif [ "$READING" == "DAY" ]; then
     DAY=$(/usr/local/bin/mi600 "$HOSTNAME" "$user" "$password" webdata_today_e)
     ##Remove end SPACE-Char
