@@ -52,7 +52,7 @@ for READING in $READINGS; do
       printf "%s = %s\n" "undefine" "$OUTPUT"
     else
       printf "%s = %s\n" "$READING" "$OUTPUT"
-  
+    fi
   elif [ "$READING" == "DAY" ]; then
     DAY=$(/usr/local/bin/mi600 "$HOSTNAME" "$user" "$password" webdata_today_e)
     ##Remove end SPACE-Char
