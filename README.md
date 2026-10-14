@@ -1,96 +1,228 @@
 # VZ_deye_script
-Script for Readout Deye Solar Inverter for VZ Database 
 
-addtional need for script from dr-ni
-https://github.com/dr-ni/mi600
+![Shell](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnubash&logoColor=white)
+![Volkszähler](https://img.shields.io/badge/Volksz%C3%A4hler-Middleware-blue)
+![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)
 
+Bash-Skripte, die einen **Deye-Mikrowechselrichter** (z. B. SUN600 / Bosswerk MI600) über dessen Weboberfläche auslesen und die Werte an die **[Volkszähler](https://volkszaehler.org)**-Datenbank übergeben.
 
-==== Schritt für Schritt ====
+Das eigentliche Auslesen übernimmt das Tool **[dr-ni/mi600](https://github.com/dr-ni/mi600)**.
 
-==== Vorbereitung ====
+Zwei Varianten stehen zur Verfügung:
 
-  * Wechselrichter über die Weboberfläche ins Netzwerk einbinden
+| Variante | Skript | Funktionsweise |
+|---|---|---|
+| **1 – Cron** | `auslesen.sh` | Liest den Wechselrichter per Cron-Job aus und schreibt direkt per HTTP in die Middleware |
+| **2 – vzlogger exec** *(empfohlen)* | `deye_read_exec.sh` | Wird vom `vzlogger` über das `exec`-Protokoll aufgerufen und gibt `Name = Wert` aus |
 
-   AP = AP_XXXXXX
-   PW = 12345678
-   admin/admin
+---
 
-<note tip>Danach z.B die Internetverbindung des Wechselrichters am Router auf gesperrt setzen.\\
-Zusätzlich sollte, wenn möglich, eine feste IP für den Wechselrichter festgelegt werden.</note>
+## Inhalt
 
-  * Abfragescript installieren
+- [Voraussetzungen](#voraussetzungen)
+- [Wechselrichter vorbereiten](#wechselrichter-vorbereiten)
+- [mi600 installieren](#mi600-installieren)
+- [Installation](#installation)
+- [Variante 1: Cron-Job](#variante-1-cron-job)
+- [Variante 2: vzlogger exec](#variante-2-vzlogger-exec)
+- [Lizenz](#lizenz)
 
-   git clone https://github.com/dr-ni/mi600.git
+---
 
-  * Verzeichnis wechseln
+## Voraussetzungen
 
-   cd mi600
+**Hardware**
 
-  * Installation starten
+- Deye-Mikrowechselrichter mit integriertem WLAN-Logger und Weboberfläche (bzw. baugleiche Geräte wie Bosswerk MI600)
 
-   sudo make install
+**Software**
 
-  * Test einer Abfrage (IP-Adresse und Zugangsdaten admin/admin an seinen Wechselrichter anpassen)
+- Volkszähler-Installation (Middleware erreichbar)
+- `bash`, `git`, `make`
+- [mi600](https://github.com/dr-ni/mi600) unter `/usr/local/bin/mi600`
+- Variante 1: `wget`
+- Variante 2: `vzlogger`
 
-   mi600 [IP-Wechselrichter] admin admin webdata_today_e 
-   
-   ==== Möglichkeit 1 CRON ====
+```bash
+sudo apt install git make wget
+```
 
-  * Sendescript Datei erstellen
-   - git clone <code>git clone https://github.com/RaptorSDS/VZ_deye_script.git </code>
-   
-   
-  * darin folgenden Inhalt hinzufügen/editieren
+---
 
+## Wechselrichter vorbereiten
 
-<note>Bitte IP Adressen, Wechselrichter Zugangsdaten, UUID an deine Gegebenheiten anpassen.
-Für den Kanal Leistung kann Auflösung "1" genommen werden </note>
+1. Mit dem Access Point des Wechselrichters verbinden und die Weboberfläche öffnen:
 
-Dieses Script sendet nur die aktuelle Leistung an die Middleware, bereits vorbereitet ist alternativ/zusätzlich der Zählerstand. Augrund der langsamen Daten ist eine Zählerstand nicht gut darstellbar\\
-Zeilen mit "#" sind auskommentiert und können bei Bedarf genutzt werden für Debug oder um einen zweiten Kanal hinzuzufügen.
+   | | |
+   |---|---|
+   | WLAN | `AP_XXXXXX` |
+   | WLAN-Passwort | `12345678` |
+   | Login Weboberfläche | `admin` / `admin` |
 
-  * Datei Speichern und ausführbar machen
+2. Den Wechselrichter in das eigene WLAN einbinden.
 
-   chmod +x auslesen.sh
+> [!TIP]
+> Danach am Router z. B. den **Internetzugang des Wechselrichters sperren** und, wenn möglich, eine **feste IP-Adresse** vergeben.
 
-  * Datei zu CRON hinzufügen (hier als Beispiel Raspberry Pi mit 5 minuten Intervall)
+---
 
-<code>*/5 * * * * /bin/bash /home/pi/auslesen.sh</code>
+## mi600 installieren
 
-Die Weboberfläche hat eine sehr langsame Aktualisierungsrate daher sollte der Cronjob nur alle 3 oder 5 Minuten laufen.
+```bash
+git clone https://github.com/dr-ni/mi600.git
+cd mi600
+sudo make install
+```
 
+Test einer Abfrage (IP-Adresse und Zugangsdaten anpassen):
 
-==== Möglichkeit 2 VZlogger mit Exec ====
+```bash
+mi600 <IP-Wechselrichter> admin admin webdata_today_e
+```
 
-  * Sendescript Datei erstellen
+Die verwendeten Werte:
 
-  -  git clone <code>git clone https://github.com/RaptorSDS/VZ_deye_script.git </code>
-   
-   
+| mi600-Parameter | Reading | Bedeutung |
+|---|---|---|
+| `webdata_now_p` | `ACTUAL` | Aktuelle Leistung (W) |
+| `webdata_today_e` | `DAY` | Tagesertrag (kWh) |
+| `webdata_total_e` | `TOTAL` | Gesamtertrag / Zählerstand (kWh) |
 
-<note>
-Bitte Zugangsdaten, an deine Gegebenheiten anpassen. 
-</note>
-<note>
-Der Script hat folgende Config  xx.sh hostname reading1 reading2 ... / Reading dürfen sein DAY , TOTAL, ACTUAL
-</note>
+---
 
+## Installation
 
-  * speichern und ausführbar machen 
-<code> sudo chmod +x deye_read_exec.sh </code>
+```bash
+git clone https://github.com/RaptorSDS/VZ_deye_script.git
+cd VZ_deye_script
+chmod +x auslesen.sh deye_read_exec.sh
+```
 
+---
 
-  * man kann nun zb nach /etc/deye/ kopiernen oder ander gut erkennbare Orte
+## Variante 1: Cron-Job
 
+Das Skript liest die **aktuelle Leistung** sowie den **Zählerstand** aus und schreibt beide per HTTP-Aufruf direkt in die Middleware. Ein Zählerstand von `0` wird nicht gesendet.
 
-  * Kanal Erstellen im Fronend
+### 1. Skript anpassen
 
+```bash
+nano auslesen.sh
+```
 
-  * vzlogger.conf editieren oder erstellen mit folgendem Inhalt
+| Variable | Bedeutung |
+|---|---|
+| `host_pv` | IP-Adresse des Wechselrichters |
+| `user` / `password` | Zugangsdaten der Weboberfläche (Standard: `admin` / `admin`) |
+| `host_db` | IP-Adresse des Volkszähler-Servers |
+| `UUID1` | Kanal-UUID für die Leistung (`ACTUAL`) |
+| `UUID2` | Kanal-UUID für den Zählerstand (`TOTAL`) |
 
+Für den Leistungskanal kann im Frontend die Auflösung `1` verwendet werden.
+Mit `#` auskommentierte Zeilen dienen zum Debuggen oder als Vorlage für weitere Kanäle (z. B. Tagesertrag `DAY`).
 
-<note important>Der Inverter wird nun alle 240s gelesen , ACTUAL und TOTAL an die DB Übergeben , TOTAL wird auf Duplicate getestet und nur spätesten wenn kein neuer Wert vorhanden ist alle 3600s neu übernommen</note>
+### 2. Cron-Job einrichten
 
+```bash
+crontab -e
+```
 
+Beispiel für einen Raspberry Pi mit einem Intervall von 5 Minuten:
 
+```cron
+*/5 * * * * /bin/bash /home/pi/VZ_deye_script/auslesen.sh
+```
 
+> [!IMPORTANT]
+> Die Weboberfläche des Wechselrichters aktualisiert ihre Werte nur sehr langsam. Der Cron-Job sollte daher nur **alle 3 bis 5 Minuten** laufen. Aus demselben Grund ist der Zählerstand nur grob darstellbar.
+
+---
+
+## Variante 2: vzlogger exec
+
+Das Skript wird mit der IP-Adresse und den gewünschten Readings aufgerufen:
+
+```text
+deye_read_exec.sh <IP> <Reading1> [Reading2] ...
+```
+
+Erlaubte Readings: `ACTUAL`, `DAY`, `TOTAL`.
+Beispielausgabe:
+
+```console
+$ ./deye_read_exec.sh 192.168.1.60 ACTUAL TOTAL
+ACTUAL = 312
+TOTAL = 1234.5
+```
+
+> [!NOTE]
+> Liefert der Wechselrichter für `TOTAL` den Wert `0`, gibt das Skript stattdessen `undefine = 0` aus. So landet kein falscher Zählerstand in der Datenbank.
+
+### 1. Zugangsdaten anpassen
+
+Falls die Weboberfläche nicht mit `admin` / `admin` erreichbar ist, die Variablen `user` und `password` in `deye_read_exec.sh` anpassen.
+
+### 2. Skript an einen festen Ort kopieren
+
+```bash
+sudo mkdir -p /etc/deye
+sudo cp deye_read_exec.sh /etc/deye/
+```
+
+### 3. Kanäle im Volkszähler-Frontend anlegen
+
+Lege für jedes Reading einen Kanal an und notiere dir die jeweilige UUID.
+
+### 4. vzlogger konfigurieren
+
+Füge in der `vzlogger.conf` unter `meters` folgenden Block hinzu und passe IP und UUIDs an:
+
+```json
+{
+  "enabled": true,
+  "allowskip": true,
+  "interval": 240,
+  "aggtime": -1,
+  "aggfixedinterval": false,
+  "protocol": "exec",
+  "command": "/etc/deye/deye_read_exec.sh 192.168.x.xx ACTUAL TOTAL",
+  "format": "$i = $v",
+  "channels": [
+    {
+      "api": "volkszaehler",
+      "uuid": "e4f6a700-xxxxx",
+      "identifier": "TOTAL",
+      "middleware": "http://localhost/middleware.php",
+      "aggmode": "none",
+      "duplicates": 3600
+    },
+    {
+      "api": "volkszaehler",
+      "uuid": "35edd970-xxxxx",
+      "identifier": "ACTUAL",
+      "middleware": "http://localhost/middleware.php",
+      "aggmode": "none",
+      "duplicates": 0
+    }
+  ]
+}
+```
+
+| Einstellung | Wirkung |
+|---|---|
+| `interval: 240` | Der Wechselrichter wird alle 240 s abgefragt |
+| `duplicates: 3600` | Der Zählerstand wird auf Duplikate geprüft und spätestens nach 3600 s erneut geschrieben, auch ohne neuen Wert |
+| `identifier` | Muss exakt dem Reading-Namen entsprechen (`ACTUAL`, `DAY`, `TOTAL`) |
+
+### 5. vzlogger neu starten
+
+```bash
+sudo systemctl restart vzlogger
+```
+
+---
+
+## Lizenz
+
+Veröffentlicht unter der [MIT-Lizenz](LICENSE).
+© 2023 Tobias Baumann aka **RaptorSDS**
