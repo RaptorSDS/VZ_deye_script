@@ -28,19 +28,19 @@ ACTUAL_NUM=$(($ACTUAL))
 
 
 #send database
-wget -O - -q "http://"$host_db"/middleware/data/"$UUID1".json?operation=add&value="$ACTUAL_NUM""
+wget -O - -q "http://${host_db}/middleware/data/${UUID1}.json?operation=add&value=${ACTUAL_NUM}"
 
 
 
 #request value TOTAL
 TOTAL=$(/usr/local/bin/mi600 $host_pv $user $password webdata_total_e)
 #Remove end SPACE-Char
-TOTAL_NUM=$(echo $TOTAL | sed 's/[[:space:]]*$//')
+TOTAL_NUM=$(echo "$TOTAL" | sed 's/[[:space:]]*$//')
 
 #check if non ZERO
-if [ $TOTAL_NUM != "0.0" ] || [$TOTAL_NUM != "0" ]; then
+if [ -n "$TOTAL_NUM" ] && [ "$TOTAL_NUM" != "0.0" ] && [ "$TOTAL_NUM" != "0" ]; then
 #Send to DB
-  wget -O - -q "http://"$host_db"/middleware/data/"$UUID2".json?operation=add&value="$TOTAL_NUM""
+  wget -O - -q "http://${host_db}/middleware/data/${UUID2}.json?operation=add&value=${TOTAL_NUM}"
 fi
 
 
