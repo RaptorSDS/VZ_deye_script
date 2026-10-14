@@ -156,7 +156,7 @@ TOTAL = 1234.5
 ```
 
 > [!NOTE]
-> Liefert der Wechselrichter für `TOTAL` den Wert `0`, (oder gar keinen Wert), gibt das Skript stattdessen den Namen `undefine` aus. So landet kein falscher Zählerstand in der Datenbank.
+> Liefert der Wechselrichter für `TOTAL` den Wert `0` (oder gar keinen Wert), gibt das Skript stattdessen den Namen `undefine` aus. So landet kein falscher Zählerstand in der Datenbank.
 
 ### 1. Zugangsdaten anpassen
 
