@@ -48,7 +48,7 @@ for READING in $READINGS; do
     TOTAL_NUM=$(echo "$TOTAL" | sed 's/[[:space:]]*$//')
     
     OUTPUT="$TOTAL_NUM"
-    if [ $TOTAL_NUM == "0.0" ] || [ $TOTAL_NUM == "0" ] ; then
+    if [ -z "$TOTAL_NUM" ] || [ "$TOTAL_NUM" == "0.0" ] || [ "$TOTAL_NUM" == "0" ]; then
       printf "%s = %s\n" "undefine" "$OUTPUT"
     else
       printf "%s = %s\n" "$READING" "$OUTPUT"
